@@ -249,7 +249,7 @@ for i, (ln, sz) in enumerate(cards):
 shot(72, 4, 'img', ('8nwzt1', 'fill'), dark=0.65, blur=True, slowzoom=True)
 txt(72, 73.5, ["DON'T BE THE ONE"], size=150)
 txt(73.5, 75, ["WHO HEARD", "ABOUT IT"], size=170)
-txt(75, 76, [("LATER.", ACCENT)], size=280, rgb=True, shake=True)
+txt(75, 76, [("TOO LATE.", ACCENT)], size=280, rgb=True, shake=True)
 # 76-88 end card
 shot(76, 12, 'end', None)
 
