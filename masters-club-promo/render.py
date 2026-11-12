@@ -239,7 +239,7 @@ for i, (k, src, cap) in enumerate(drop2):
     if cap: txt(b, b + 2, cap, size=230 if i == 0 else 170, cy=0.42, rgb=(i == 0))
 
 # 64-72 brand cards
-cards = [(["ONLY", ("40 SPOTS.", ACCENT)], 240), (["CV +", ("INTERVIEW.", ACCENT)], 220),
+cards = [(["ONLY", ("50 SPOTS.", ACCENT)], 240), (["CV +", ("INTERVIEW.", ACCENT)], 220),
          (["NOT EVERYONE"], 180), ([("GETS IN.", NAVY)], 260)]
 for i, (ln, sz) in enumerate(cards):
     b = 64 + i * 2
