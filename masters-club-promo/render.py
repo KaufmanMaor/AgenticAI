@@ -256,26 +256,30 @@ shot(76, 12, 'end', None)
 LOGO = Image.open(img('fik98k')).convert('RGB')
 
 _su = {}
-def su_badge(alpha=1.0, logo_w=360):
-    """Students Union logo on a white rounded plate (logo is blue on transparent)."""
+def su_badge(alpha=1.0, logo_w=230):
+    """Students Union logo recolored to soft white (no plate), for a subtle corner mark."""
     if logo_w not in _su:
         lg = Image.open(f"{S}/su/logo.png").convert('RGBA')
         lg = lg.crop(lg.getbbox())
         lh = int(lg.height * logo_w / lg.width)
         lg = lg.resize((logo_w, lh), Image.LANCZOS)
-        px, py = 36, 22
-        plate = Image.new('RGBA', (logo_w + 2 * px, lh + 2 * py), (0, 0, 0, 0))
-        ImageDraw.Draw(plate).rounded_rectangle((0, 0, plate.width - 1, plate.height - 1), 28, fill=WHITE + (255,))
-        plate.alpha_composite(lg, (px, py))
-        _su[logo_w] = plate
+        a_ = lg.split()[3].point(lambda v: int(v * 0.88))
+        wht = Image.new('RGBA', lg.size, WHITE + (255,)); wht.putalpha(a_)
+        # faint shadow for legibility on bright shots
+        sh = Image.new('RGBA', (lg.width + 30, lg.height + 30), (0, 0, 0, 0))
+        sa = Image.new('L', sh.size, 0); sa.paste(a_, (15, 15))
+        sa = sa.filter(ImageFilter.GaussianBlur(6)).point(lambda v: int(v * 0.45))
+        sh.putalpha(sa)
+        sh.alpha_composite(wht, (15, 15))
+        _su[logo_w] = sh
     p = _su[logo_w]
     if alpha < 1:
         p = p.copy(); p.putalpha(p.split()[3].point(lambda v: int(v * alpha)))
     return p
 
-def put_su(frame, alpha, cy=0.075):
+def put_su(frame, alpha, cy=None):
     b = su_badge(alpha)
-    frame.alpha_composite(b, ((W - b.width) // 2, int(H * cy - b.height / 2)))
+    frame.alpha_composite(b, (40, 110))
 
 def end_card(t):
     fr = Image.new('RGBA', (W, H), NAVY + (255,))
