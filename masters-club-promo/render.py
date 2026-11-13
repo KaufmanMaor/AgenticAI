@@ -255,6 +255,28 @@ shot(76, 12, 'end', None)
 
 LOGO = Image.open(img('fik98k')).convert('RGB')
 
+_su = {}
+def su_badge(alpha=1.0, logo_w=360):
+    """Students Union logo on a white rounded plate (logo is blue on transparent)."""
+    if logo_w not in _su:
+        lg = Image.open(f"{S}/su/logo.png").convert('RGBA')
+        lg = lg.crop(lg.getbbox())
+        lh = int(lg.height * logo_w / lg.width)
+        lg = lg.resize((logo_w, lh), Image.LANCZOS)
+        px, py = 36, 22
+        plate = Image.new('RGBA', (logo_w + 2 * px, lh + 2 * py), (0, 0, 0, 0))
+        ImageDraw.Draw(plate).rounded_rectangle((0, 0, plate.width - 1, plate.height - 1), 28, fill=WHITE + (255,))
+        plate.alpha_composite(lg, (px, py))
+        _su[logo_w] = plate
+    p = _su[logo_w]
+    if alpha < 1:
+        p = p.copy(); p.putalpha(p.split()[3].point(lambda v: int(v * alpha)))
+    return p
+
+def put_su(frame, alpha, cy=0.075):
+    b = su_badge(alpha)
+    frame.alpha_composite(b, ((W - b.width) // 2, int(H * cy - b.height / 2)))
+
 def end_card(t):
     fr = Image.new('RGBA', (W, H), NAVY + (255,))
     # radial glow
@@ -273,6 +295,8 @@ def end_card(t):
     alpha = alpha.point(lambda v: int(v * a))
     white = Image.new('RGBA', lgr.size, WHITE + (255,)); white.putalpha(alpha)
     fr.alpha_composite(white, ((W - lw) // 2, int(H * 0.30 - lh / 2)))
+    if t > 0.3:
+        put_su(fr, ease_out((t - 0.3) / 0.4), cy=0.075)
     if t > 0.9:
         put_text(fr, text_layer([("COHORT 2", ACCENT)], 200), t - 0.9, cy=0.56, rgbsplit=True)
     if t > 1.4:
@@ -353,6 +377,9 @@ def render_frame(fi):
         frame.alpha_composite(lab, ((W - lab.width) // 2, by - lab.height - 4))
         d.rounded_rectangle((bx, by, bx + bw_, by + bh_), 13, outline=WHITE + (255,), width=4)
         d.rounded_rectangle((bx + 6, by + 6, bx + 6 + int((bw_ - 12) * pct / 100), by + bh_ - 6), 8, fill=ACCENT + (255,))
+    # Students Union logo during the intro (mandatory)
+    if beat < 8:
+        put_su(frame, min(1.0, 0.35 + tsec / 0.4))
     # brand bug
     if 8 <= beat < 76 and kind not in ('card',):
         bug = text_layer(["THE MASTERS CLUB · REICHMAN"], 30, F_MONT % 700, color=(235, 240, 255), track=4)
